@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catalogo — Motora · Autos usados Buenos Aires y San Rafael</title>
+<meta name="description" content="Catalogo de autos usados de Motora. Stock en Buenos Aires y San Rafael, Mendoza. Sedanes, SUVs, hatchbacks y pickups con documentacion en orden.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 72 72'%3E%3Crect width='72' height='72' rx='14' fill='%230f0f0f'/%3E%3Cpath d='M36 10 A26 26 0 1 1 15 53' stroke='%232a6347' stroke-width='4' stroke-linecap='round' fill='none'/%3E%3Cpath d='M21 46 L21 29 L36 41 L51 29 L51 46' stroke='%232a6347' stroke-width='5.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='36' cy='36' r='4.5' fill='%232a6347'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --white: #ffffff;
+    --off:   #f5f5f3;
+    --dark:  #0f0f0f;
+    --mid:   #4a4a4a;
+    --muted: #888888;
+    --line:  #e6e6e4;
+    --green: #2a6347;
+    --gel:   #e6f2ec;
+  }
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body { font-family:'Inter',sans-serif; background:var(--off); color:var(--dark); -webkit-font-smoothing:antialiased; }
+
+  /* NAV */
+  nav { height:56px; display:flex; align-items:center; justify-content:space-between; padding:0 4rem; background:var(--white); border-bottom:1px solid var(--line); position:sticky; top:0; z-index:100; }
+  .logo { font-size:.9rem; font-weight:800; letter-spacing:.35em; text-transform:uppercase; color:var(--dark); text-decoration:none; display:flex; align-items:center; gap:10px; }
+  .logo svg { display:block; flex-shrink:0; }
+  .nav-back { display:flex; align-items:center; gap:6px; font-size:.78rem; font-weight:500; color:var(--muted); text-decoration:none; transition:color .15s; }
+  .nav-back:hover { color:var(--dark); }
+  .nav-back svg { width:14px; height:14px; }
+
+  /* HEADER */
+  .page-header { padding:3.5rem 4rem 2.5rem; background:var(--white); border-bottom:1px solid var(--line); display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:1.5rem; }
+  .page-label { font-size:.62rem; font-weight:600; letter-spacing:.22em; text-transform:uppercase; color:var(--green); margin-bottom:.4rem; }
+  .page-title { font-size:clamp(1.8rem,3vw,2.8rem); font-weight:800; letter-spacing:-.04em; line-height:1.1; }
+
+  /* FILTERS */
+  .filters-wrap { display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
+  .chip { background:var(--off); border:1px solid var(--line); color:var(--muted); padding:.35rem .9rem; border-radius:100px; font-family:'Inter',sans-serif; font-size:.72rem; font-weight:500; cursor:pointer; transition:all .15s; white-space:nowrap; }
+  .chip:hover { border-color:var(--mid); color:var(--mid); }
+  .chip.on { background:var(--dark); border-color:var(--dark); color:var(--white); }
+  .chip-sep { width:1px; height:16px; background:var(--line); margin:0 2px; flex-shrink:0; }
+  select.chip { appearance:none; padding-right:1.6rem; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23999' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right .7rem center; cursor:pointer; outline:none; }
+  select.chip:focus { border-color:var(--green); }
+
+  /* NOTA TRASLADO */
+  .traslado-note { font-size:.72rem; color:var(--muted); margin-bottom:1.5rem; border-left:2px solid var(--line); padding-left:.75rem; line-height:1.6; }
+
+
+  .sede-tabs { display:flex; gap:0; border-bottom:1px solid var(--line); background:var(--white); padding:0 4rem; overflow-x:auto; scrollbar-width:none; }
+  .sede-tabs::-webkit-scrollbar { display:none; }
+  .sede-tab { padding:.85rem 1.4rem; font-size:.72rem; font-weight:600; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; white-space:nowrap; transition:color .15s, border-color .15s; letter-spacing:.02em; display:flex; align-items:center; gap:6px; background:none; border-top:none; border-left:none; border-right:none; font-family:'Inter',sans-serif; }
+  .sede-tab:hover { color:var(--dark); }
+  .sede-tab.on { color:var(--dark); border-bottom-color:var(--dark); }
+  .sede-tab .sede-dot { width:6px; height:6px; border-radius:50%; background:var(--line); flex-shrink:0; }
+  .sede-tab.on .sede-dot { background:var(--green); }
+  .sede-tab-all.on { color:var(--dark); border-bottom-color:var(--green); }
+
+  @media(max-width:768px) {
+    .sede-tabs { padding:0 1.5rem; }
+  }
+
+
+  main { padding:2rem 4rem 5rem; }
+  .count { font-size:.72rem; color:var(--muted); margin-bottom:1.5rem; }
+  .count strong { color:var(--dark); font-weight:600; }
+
+  /* GRID */
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(270px,1fr)); gap:1px; background:var(--line); border:1px solid var(--line); }
+  .card { background:var(--white); cursor:pointer; transition:background .15s; animation:up .3s ease both; }
+  @keyframes up { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+  .card:hover { background:var(--off); }
+  .card-img-wrap { overflow:hidden; position:relative; height:190px; background:var(--off); }
+  .card-img-placeholder { width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:var(--off); }
+  .card-img-placeholder svg { width:32px; height:32px; color:var(--line); }
+  .card-img { width:100%; height:100%; object-fit:cover; display:block; transition:transform .4s ease; }
+  .card-img.errored { display:none; }
+
+  .card:hover .card-img { transform:scale(1.04); }
+  .card-badge { position:absolute; top:10px; left:10px; background:var(--green); color:#fff; font-size:.54rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; padding:3px 8px; border-radius:3px; }
+  .card-foto-count { position:absolute; bottom:9px; right:9px; background:rgba(0,0,0,.55); color:#fff; font-size:.6rem; font-weight:600; padding:3px 7px; border-radius:3px; display:flex; align-items:center; gap:4px; }
+  .card-foto-count svg { width:10px; height:10px; }
+  .card-body { padding:1.1rem 1.2rem; }
+  .card-meta { display:flex; justify-content:space-between; margin-bottom:3px; }
+  .card-brand { font-size:.58rem; font-weight:600; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); }
+  .card-tipo { font-size:.58rem; color:var(--muted); }
+  .card-name { font-size:1.05rem; font-weight:700; letter-spacing:-.02em; margin-bottom:8px; }
+  .card-specs { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px; }
+  .card-spec { font-size:.65rem; color:var(--muted); }
+  .card-foot { display:flex; justify-content:space-between; align-items:center; padding-top:10px; border-top:1px solid var(--line); }
+  .card-price { font-size:1.05rem; font-weight:700; letter-spacing:-.03em; }
+  .card-price small { font-size:.62rem; font-weight:400; color:var(--muted); margin-left:2px; }
+  .card-cta { font-size:.67rem; font-weight:600; color:var(--green); background:var(--gel); border:none; padding:5px 10px; border-radius:4px; cursor:pointer; font-family:'Inter',sans-serif; transition:background .15s,color .15s; }
+  .card-cta:hover { background:var(--green); color:#fff; }
+  .empty { grid-column:1/-1; padding:5rem; text-align:center; background:var(--white); color:var(--muted); font-size:.85rem; }
+
+  /* MODAL */
+  .overlay { display:none; position:fixed; inset:0; z-index:300; background:rgba(0,0,0,.5); backdrop-filter:blur(4px); align-items:center; justify-content:center; padding:1.5rem; }
+  .overlay.open { display:flex; }
+  .modal { background:var(--white); border-radius:10px; max-width:680px; width:100%; max-height:94vh; overflow-y:auto; position:relative; box-shadow:0 24px 64px rgba(0,0,0,.25); animation:mIn .2s ease; }
+  @keyframes mIn { from{opacity:0;transform:scale(.97) translateY(8px)} to{opacity:1;transform:scale(1) translateY(0)} }
+  .modal-x { position:absolute; top:11px; right:11px; z-index:10; width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,.9); border:1px solid var(--line); color:var(--mid); font-size:.75rem; display:flex; align-items:center; justify-content:center; cursor:pointer; font-family:'Inter',sans-serif; transition:background .15s,color .15s; }
+  .modal-x:hover { background:var(--dark); color:#fff; border-color:var(--dark); }
+
+  /* GALERIA */
+  .gal-main { position:relative; height:280px; background:var(--dark); border-radius:10px 10px 0 0; overflow:hidden; }
+  .gal-main-img { width:100%; height:100%; object-fit:cover; display:block; transition:opacity .2s; }
+  .gal-arrow { position:absolute; top:50%; transform:translateY(-50%); z-index:5; width:34px; height:34px; background:rgba(255,255,255,.9); border:none; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background .15s; }
+  .gal-arrow:hover { background:#fff; }
+  .gal-arrow svg { width:14px; height:14px; color:var(--dark); }
+  .gal-arrow.prev { left:12px; }
+  .gal-arrow.next { right:12px; }
+  .gal-arrow:disabled { opacity:.3; cursor:default; }
+  .gal-counter { position:absolute; bottom:10px; right:12px; background:rgba(0,0,0,.55); color:#fff; font-size:.62rem; font-weight:600; padding:3px 8px; border-radius:3px; }
+
+  .gal-thumbs { display:flex; gap:4px; padding:8px; background:var(--off); overflow-x:auto; scrollbar-width:none; }
+  .gal-thumbs::-webkit-scrollbar { display:none; }
+  .gal-thumb { flex:0 0 64px; height:48px; border-radius:4px; overflow:hidden; cursor:pointer; border:2px solid transparent; transition:border-color .15s; }
+  .gal-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+  .gal-thumb.active { border-color:var(--green); }
+
+  /* MODAL BODY */
+  .modal-body { padding:1.5rem 1.6rem 1.8rem; }
+  .m-brand { font-size:.56rem; font-weight:600; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); }
+  .m-name { font-size:1.55rem; font-weight:800; letter-spacing:-.04em; margin:4px 0 1rem; }
+  .m-specs { display:grid; grid-template-columns:repeat(3,1fr); gap:5px; margin-bottom:1rem; }
+  .m-cell { background:var(--off); border-radius:5px; padding:9px 11px; }
+  .m-cell-l { font-size:.54rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); }
+  .m-cell-v { font-size:.82rem; font-weight:600; margin-top:3px; }
+  .m-desc { font-size:.8rem; color:var(--muted); line-height:1.85; margin-bottom:1.4rem; }
+  .m-foot { display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--line); padding-top:1.1rem; }
+  .m-price { font-size:1.45rem; font-weight:800; letter-spacing:-.04em; }
+  .m-price small { font-size:.62rem; font-weight:400; color:var(--muted); margin-left:3px; }
+  .btn-wa { display:inline-flex; align-items:center; gap:6px; background:#25D366; color:#fff; border:none; padding:.75rem 1.4rem; border-radius:5px; font-family:'Inter',sans-serif; font-weight:600; font-size:.8rem; cursor:pointer; text-decoration:none; transition:filter .15s,transform .15s; }
+  .btn-wa:hover { filter:brightness(.9); transform:translateY(-1px); }
+  .btn-wa svg { width:15px; height:15px; flex-shrink:0; }
+
+  /* RESPONSIVE */
+  @media(max-width:768px){
+    nav, .page-header, main { padding-left:1.5rem; padding-right:1.5rem; }
+    .page-header { flex-direction:column; align-items:flex-start; }
+    .m-specs { grid-template-columns:repeat(2,1fr); }
+    .gal-main { height:220px; }
+  }
+  @media(max-width:600px){
+    .overlay { padding:.5rem; }
+    .modal { border-radius:8px; max-height:95vh; }
+    .gal-main { height:52vw; min-height:150px; border-radius:8px 8px 0 0; }
+    .gal-arrow { width:28px; height:28px; }
+    .gal-arrow svg { width:11px; height:11px; }
+    .gal-thumbs { padding:5px; }
+    .gal-thumb { flex:0 0 50px; height:36px; }
+    .modal-body { padding:.9rem 1rem 1.2rem; }
+    .m-name { font-size:1.15rem; margin-bottom:.7rem; }
+    .m-specs { grid-template-columns:repeat(2,1fr); gap:4px; margin-bottom:.75rem; }
+    .m-cell { padding:6px 8px; }
+    .m-cell-v { font-size:.76rem; }
+    .m-desc { font-size:.75rem; line-height:1.65; margin-bottom:.9rem; }
+    .m-foot { flex-direction:column; align-items:stretch; gap:.75rem; }
+    .m-price { font-size:1.2rem; }
+    .m-foot .btn-wa { width:100%; justify-content:center; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="logo" href="index.html">
+    <svg width="22" height="22" viewBox="0 0 72 72" fill="none">
+      <path d="M36 8 A28 28 0 1 1 13.5 55.5" stroke="#2a6347" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+      <path d="M36 15 A21 21 0 1 1 18.3 53" stroke="#2a6347" stroke-width="1.5" stroke-linecap="round" fill="none" opacity=".22"/>
+      <path d="M20 47 L20 28 L36 42 L52 28 L52 47" stroke="#2a6347" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="36" cy="36" r="5" fill="#2a6347"/>
+    </svg>
+    Motora
+  </a>
+  <a class="nav-back" href="index.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    Volver al inicio
+  </a>
+</nav>
+
+<div class="page-header">
+  <div>
+    <div class="page-label" id="pageLabel">Stock actual · Todos</div>
+    <h1 class="page-title" id="pageTitle">Todos los vehiculos</h1>
+  </div>
+  <div class="filters-wrap">
+    <select class="chip" id="filterMarca" onchange="applyFilters()">
+      <option value="">Todas las marcas</option>
+    </select>
+    <div class="chip-sep"></div>
+    <button class="chip on" onclick="setTipo(this,'')">Todos</button>
+    <button class="chip" onclick="setTipo(this,'Sedan')">Sedan</button>
+    <button class="chip" onclick="setTipo(this,'SUV')">SUV</button>
+    <button class="chip" onclick="setTipo(this,'Pickup')">Pickup</button>
+    <button class="chip" onclick="setTipo(this,'Hatchback')">Hatchback</button>
+  </div>
+</div>
+
+<!-- SEDE TABS -->
+<div class="sede-tabs">
+  <button class="sede-tab sede-tab-all on" onclick="setSede(this,'')">
+    <span class="sede-dot"></span>
+    Todos los autos
+  </button>
+  <button class="sede-tab" onclick="setSede(this,'bsas')">
+    <span class="sede-dot"></span>
+    Buenos Aires
+  </button>
+  <button class="sede-tab" onclick="setSede(this,'srm')">
+    <span class="sede-dot"></span>
+    San Rafael, Mendoza
+  </button>
+</div>
+
+<main>
+  <div class="count" id="count"></div>
+  <p class="traslado-note">¿Te interesa un auto de otra sede? Lo coordinamos nosotros — sin importar si estás en Buenos Aires o en San Rafael.</p>
+  <div id="grid"></div>
+</main>
+
+<!-- MODAL CON GALERIA -->
+<div class="overlay" id="overlay" onclick="closeModalOut(event)">
+  <div class="modal">
+    <button class="modal-x" onclick="closeModal()">&#10005;</button>
+
+    <div class="gal-main">
+      <img id="galMainImg" src="" alt="" class="gal-main-img">
+      <button class="gal-arrow prev" id="galPrev" onclick="galMove(-1)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <button class="gal-arrow next" id="galNext" onclick="galMove(1)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+      <div class="gal-counter" id="galCounter"></div>
+    </div>
+    <div class="gal-thumbs" id="galThumbs"></div>
+
+    <div class="modal-body">
+      <div class="m-brand" id="mBrand"></div>
+      <div class="m-name"  id="mName"></div>
+      <div class="m-specs" id="mSpecs"></div>
+      <p   class="m-desc"  id="mDesc"></p>
+      <div class="m-foot" style="flex-direction:column;gap:.75rem;align-items:stretch;">
+        <div class="m-price" id="mPrice"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;">
+          <button onclick="openReserva()" style="display:flex;align-items:center;justify-content:center;gap:6px;background:var(--dark);color:#fff;border:none;padding:.78rem .5rem;border-radius:6px;font-family:'Inter',sans-serif;font-weight:700;font-size:.75rem;cursor:pointer;transition:background .15s;white-space:nowrap;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Reservar online
+          </button>
+          <a id="mWa" href="#" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:6px;background:#25D366;color:#fff;padding:.78rem .5rem;border-radius:6px;font-family:'Inter',sans-serif;font-weight:700;font-size:.75rem;text-decoration:none;transition:filter .15s;white-space:nowrap;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.528 5.857L.057 23.882l6.158-1.615A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 0 1-5.006-1.374l-.36-.214-3.727.977.994-3.62-.234-.372A9.818 9.818 0 0 1 2.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg>
+            Me interesa este auto
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="autos.js"></script>
+<script>
+var WA = "5491137994538";
+AUTOS.forEach(function(a, i) { a._id = i; });
+
+var fMarca = "";
+var fTipo  = "";
+var fSede  = "";
+var galFotos = [];
+var galIdx   = 0;
+
+// Read sede from URL param on load
+(function(){
+  var params = new URLSearchParams(window.location.search);
+  var s = params.get("sede");
+  if(s === "bsas" || s === "srm") {
+    fSede = s;
+  }
+})();
+
+function pesos(n) {
+  return "$" + Number(n).toLocaleString("es-AR");
+}
+
+function primeraFoto(a) {
+  return (a.fotos && a.fotos.length) ? a.fotos[0] : "";
+}
+
+function buildSelect() {
+  var marcas = [];
+  AUTOS.forEach(function(a) {
+    if (a.marca && (!fSede || a.sede === fSede) && marcas.indexOf(a.marca) < 0) marcas.push(a.marca);
+  });
+  marcas.sort();
+  var sel = document.getElementById("filterMarca");
+  sel.innerHTML = '<option value="">Todas las marcas</option>';
+  marcas.forEach(function(m) {
+    var o = document.createElement("option");
+    o.value = m; o.textContent = m; sel.appendChild(o);
+  });
+}
+
+function render() {
+  var wrap = document.getElementById("grid");
+  var cnt  = document.getElementById("count");
+  var lista = AUTOS.filter(function(a) {
+    return (!fMarca || a.marca === fMarca)
+        && (!fTipo  || a.tipo  === fTipo)
+        && (!fSede  || a.sede  === fSede);
+  });
+
+  // Update page label/title based on sede
+  var labelEl = document.getElementById("pageLabel");
+  var titleEl = document.getElementById("pageTitle");
+  if (fSede === "bsas") {
+    labelEl.textContent = "Stock actual · Buenos Aires";
+    titleEl.textContent = "Catalogo Buenos Aires";
+  } else if (fSede === "srm") {
+    labelEl.textContent = "Stock actual · San Rafael, Mendoza";
+    titleEl.textContent = "Catalogo San Rafael";
+  } else {
+    labelEl.textContent = "Stock actual · Todos";
+    titleEl.textContent = "Todos los vehiculos";
+  }
+
+  cnt.innerHTML = "<strong>" + lista.length + "</strong> vehiculo" + (lista.length !== 1 ? "s" : "") + " disponible" + (lista.length !== 1 ? "s" : "");
+  if (!lista.length) {
+    wrap.innerHTML = '<div class="grid"><div class="empty">Sin coincidencias para ese filtro.</div></div>';
+    return;
+  }
+  var h = '<div class="grid">';
+  lista.forEach(function(a, i) {
+    var foto = primeraFoto(a);
+    var nFotos = (a.fotos && a.fotos.length) ? a.fotos.length : 0;
+    var sedeName = a.sede === "bsas" ? "Buenos Aires" : (a.sede === "srm" ? "San Rafael" : "");
+    h += '<div class="card" style="animation-delay:' + (i * 0.04) + 's" onclick="openModal(' + a._id + ')">';
+    h += '<div class="card-img-wrap">';
+    if (foto) h += '<img class="card-img" src="' + foto + '" alt="' + a.marca + ' ' + a.modelo + '" loading="lazy" onerror="this.classList.add(\'errored\');this.insertAdjacentHTML(\'afterend\',\'<div class=\\\'card-img-placeholder\\\'>\'+ \'<svg viewBox=\\\'0 0 24 24\\\' fill=\\\'none\\\' stroke=\\\'currentColor\\\' stroke-width=\\\'1.5\\\' stroke-linecap=\\\'round\\\' stroke-linejoin=\\\'round\\\'>\'+ \'<rect x=\\\'3\\\' y=\\\'3\\\' width=\\\'18\\\' height=\\\'18\\\' rx=\\\'2\\\'/>\'+ \'<circle cx=\\\'8.5\\\' cy=\\\'8.5\\\' r=\\\'1.5\\\'/><polyline points=\\\'21 15 16 10 5 21\\\'/>\'+ \'</svg></div>\\\')">';
+    else h += '<div class="card-img-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>';
+    if (a.badge) h += '<span class="card-badge">' + a.badge + '</span>';
+    if (nFotos > 1) h += '<span class="card-foto-count"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>' + nFotos + '</span>';
+    if (!fSede && sedeName) h += '<span style="position:absolute;bottom:9px;left:9px;background:rgba(0,0,0,.6);color:#fff;font-size:.52rem;font-weight:600;padding:3px 7px;border-radius:3px;letter-spacing:.04em;">' + sedeName + '</span>';
+    h += '</div><div class="card-body">';
+    h += '<div class="card-meta"><span class="card-brand">' + a.marca + '</span><span class="card-tipo">' + a.tipo + '</span></div>';
+    h += '<div class="card-name">' + a.modelo + '</div>';
+    h += '<div class="card-specs">';
+    if (a.anio)        h += '<span class="card-spec">' + a.anio + '</span>';
+    if (a.km)          h += '<span class="card-spec">' + a.km + ' km</span>';
+    if (a.trans)       h += '<span class="card-spec">' + a.trans + '</span>';
+    if (a.combustible) h += '<span class="card-spec">' + a.combustible + '</span>';
+    h += '</div><div class="card-foot">';
+    h += '<div class="card-price">' + pesos(a.precio) + '<small>USD</small></div>';
+    h += '<button class="card-cta">Ver detalle</button>';
+    h += '</div></div></div>';
+  });
+  h += '</div>';
+  wrap.innerHTML = h;
+}
+
+function applyFilters() { fMarca = document.getElementById("filterMarca").value; render(); }
+function setTipo(btn, tipo) {
+  document.querySelectorAll(".chip").forEach(function(b) { b.classList.remove("on"); });
+  btn.classList.add("on"); fTipo = tipo; render();
+}
+function setSede(btn, sede) {
+  document.querySelectorAll(".sede-tab").forEach(function(b) { b.classList.remove("on"); });
+  btn.classList.add("on"); fSede = sede;
+  document.getElementById("filterMarca").value = "";
+  fMarca = "";
+  buildSelect();
+  render();
+  document.getElementById("grid").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+// Init sede tabs from URL param — runs after DOM is ready via buildSelect/render below
+
+// ── GALERIA ──────────────────────────────────────────────────────
+function galSet(idx) {
+  galIdx = idx;
+  var img = document.getElementById("galMainImg");
+  img.style.opacity = "0";
+  setTimeout(function() {
+    img.src = galFotos[galIdx];
+    img.style.opacity = "1";
+  }, 100);
+  document.getElementById("galCounter").textContent = (galIdx + 1) + " / " + galFotos.length;
+  document.getElementById("galPrev").disabled = galIdx <= 0;
+  document.getElementById("galNext").disabled = galIdx >= galFotos.length - 1;
+  document.querySelectorAll(".gal-thumb").forEach(function(t, i) {
+    t.classList.toggle("active", i === galIdx);
+    if (i === galIdx) t.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+  });
+}
+
+function galMove(dir) { galSet(galIdx + dir); }
+
+function buildGallery(fotos) {
+  galFotos = fotos && fotos.length ? fotos : [""];
+  galIdx = 0;
+  var mainImg = document.getElementById("galMainImg");
+  mainImg.src = galFotos[0];
+  mainImg.style.opacity = "1";
+  document.getElementById("galCounter").textContent = galFotos.length > 1 ? "1 / " + galFotos.length : "";
+  document.getElementById("galPrev").disabled = true;
+  document.getElementById("galNext").disabled = galFotos.length <= 1;
+  document.getElementById("galNext").style.display = galFotos.length <= 1 ? "none" : "flex";
+  document.getElementById("galPrev").style.display = galFotos.length <= 1 ? "none" : "flex";
+  var thumbsEl = document.getElementById("galThumbs");
+  if (galFotos.length <= 1) { thumbsEl.style.display = "none"; return; }
+  thumbsEl.style.display = "flex";
+  var th = "";
+  galFotos.forEach(function(src, i) {
+    th += '<div class="gal-thumb' + (i === 0 ? " active" : "") + '" onclick="galSet(' + i + ')">';
+    th += '<img src="' + src + '" alt="foto ' + (i + 1) + '" loading="lazy">';
+    th += '</div>';
+  });
+  thumbsEl.innerHTML = th;
+}
+
+// ── MODAL ────────────────────────────────────────────────────────
+function openModal(id) {
+  var a = null;
+  AUTOS.forEach(function(x) { if (x._id === id) a = x; });
+  if (!a) return;
+
+  buildGallery(a.fotos);
+
+  document.getElementById("mBrand").textContent = a.marca;
+  document.getElementById("mName").textContent  = a.modelo;
+  document.getElementById("mDesc").textContent  = a.desc || "";
+  document.getElementById("mPrice").innerHTML   = pesos(a.precio) + '<small>USD</small>';
+  roCurrentAuto = a;
+
+  var s = "";
+  if (a.anio)        s += '<div class="m-cell"><div class="m-cell-l">Anio</div><div class="m-cell-v">'        + a.anio        + '</div></div>';
+  if (a.km)          s += '<div class="m-cell"><div class="m-cell-l">Kilometros</div><div class="m-cell-v">'  + a.km          + ' km</div></div>';
+  if (a.combustible) s += '<div class="m-cell"><div class="m-cell-l">Combustible</div><div class="m-cell-v">' + a.combustible + '</div></div>';
+  if (a.trans)       s += '<div class="m-cell"><div class="m-cell-l">Transmision</div><div class="m-cell-v">' + a.trans       + '</div></div>';
+  if (a.tipo)        s += '<div class="m-cell"><div class="m-cell-l">Tipo</div><div class="m-cell-v">'        + a.tipo        + '</div></div>';
+  if (a.color)       s += '<div class="m-cell"><div class="m-cell-l">Color</div><div class="m-cell-v">'       + a.color       + '</div></div>';
+  document.getElementById("mSpecs").innerHTML = s;
+
+  var msg = "Hola! Me interesa el " + a.marca + " " + a.modelo + " " + a.anio + ". Me podes dar mas info?";
+  document.getElementById("mWa").href = "https://wa.me/" + WA + "?text=" + encodeURIComponent(msg);
+
+  document.getElementById("overlay").classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+
+function closeModal() {
+  document.getElementById("overlay").classList.remove("open");
+  document.body.style.overflow = "";
+}
+
+function closeModalOut(e) {
+  if (e.target === document.getElementById("overlay")) closeModal();
+}
+
+document.addEventListener("keydown", function(e) {
+  if (e.key === "Escape") closeModal();
+  if (e.key === "ArrowLeft")  galMove(-1);
+  if (e.key === "ArrowRight") galMove(1);
+});
+
+// Touch swipe en modal
+var mSwX = 0, mSwY = 0;
+var galMainEl = document.querySelector(".gal-main");
+if (galMainEl) {
+  galMainEl.addEventListener("touchstart", function(e) {
+    mSwX = e.touches[0].clientX;
+    mSwY = e.touches[0].clientY;
+  }, { passive: true });
+  galMainEl.addEventListener("touchend", function(e) {
+    var dx = mSwX - e.changedTouches[0].clientX;
+    var dy = Math.abs(mSwY - e.changedTouches[0].clientY);
+    if (Math.abs(dx) > 40 && Math.abs(dx) > dy) {
+      if (dx > 0 && galIdx < galFotos.length - 1) galMove(1);
+      else if (dx < 0 && galIdx > 0) galMove(-1);
+    }
+  }, { passive: true });
+}
+
+// ── INIT ─────────────────────────────────────────────────────────
+// 1. Activate correct sede tab based on URL param
+if (fSede === "bsas" || fSede === "srm") {
+  document.querySelectorAll(".sede-tab").forEach(function(b) { b.classList.remove("on"); });
+  var tabs = document.querySelectorAll(".sede-tab");
+  if (fSede === "bsas" && tabs[1]) tabs[1].classList.add("on");
+  if (fSede === "srm"  && tabs[2]) tabs[2].classList.add("on");
+}
+// 2. Build marca dropdown filtered to current sede
+buildSelect();
+// 3. Render grid (this also updates the page title/label)
+render();
+</script>
+
+<!-- MODAL RESERVA ONLINE -->
+<style>
+  .ro-overlay{display:none;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.6);backdrop-filter:blur(5px);align-items:center;justify-content:center;padding:1.5rem;}
+  .ro-overlay.open{display:flex;}
+  .ro-modal{background:#fff;border-radius:14px;max-width:460px;width:100%;max-height:94vh;overflow-y:auto;position:relative;box-shadow:0 32px 80px rgba(0,0,0,.3);animation:roIn .22s cubic-bezier(.16,1,.3,1);font-family:'Inter',sans-serif;}
+  @keyframes roIn{from{opacity:0;transform:scale(.95) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+  .ro-x{position:absolute;top:12px;right:12px;z-index:10;width:28px;height:28px;border-radius:50%;background:#f5f5f3;border:1px solid #e6e6e4;color:#4a4a4a;font-size:.72rem;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;}
+  .ro-x:hover{background:#0f0f0f;color:#fff;border-color:#0f0f0f;}
+  .ro-head{padding:1.4rem 1.6rem 1.1rem;border-bottom:1px solid #e6e6e4;}
+  .ro-head-label{font-size:.52rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:#2a6347;margin-bottom:3px;}
+  .ro-head-title{font-size:1.15rem;font-weight:800;letter-spacing:-.04em;}
+  .ro-car{margin:1rem 1.6rem;background:#f5f5f3;border-radius:8px;padding:.8rem .9rem;display:flex;align-items:center;gap:.85rem;}
+  .ro-car-img{width:70px;height:52px;object-fit:cover;border-radius:6px;flex-shrink:0;background:#e6e6e4;}
+  .ro-car-brand{font-size:.5rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#888;}
+  .ro-car-name{font-size:.9rem;font-weight:700;letter-spacing:-.02em;margin:2px 0 3px;}
+  .ro-car-price{font-size:.82rem;font-weight:700;}
+  .ro-car-price small{font-size:.56rem;color:#888;font-weight:400;}
+  .ro-amount{margin:0 1.6rem 1rem;padding:1rem 1.1rem;background:#f0faf6;border-radius:8px;border:1px solid rgba(42,99,71,.15);}
+  .ro-amount-lbl{font-size:.5rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#2a6347;margin-bottom:4px;}
+  .ro-amount-val{font-size:1.6rem;font-weight:800;letter-spacing:-.03em;}
+  .ro-amount-val span{font-size:.75rem;color:#888;font-weight:400;margin-left:4px;}
+  .ro-amount-note{font-size:.63rem;color:#888;margin-top:3px;}
+  .ro-note{margin:0 1.6rem 1rem;padding:.65rem .85rem;background:#fff3e0;border-left:3px solid #ff9800;border-radius:0 6px 6px 0;font-size:.7rem;color:#555;line-height:1.7;}
+  .ro-note strong{color:#e65100;}
+  .ro-mp-btn{display:flex;align-items:center;justify-content:center;gap:8px;background:#009ee3;color:#fff;padding:.95rem;border-radius:8px;font-family:'Inter',sans-serif;font-weight:700;font-size:.86rem;text-decoration:none;margin:0 1.6rem .7rem;transition:filter .15s;}
+  .ro-mp-btn:hover{filter:brightness(.9);}
+  .ro-wa-btn{display:flex;align-items:center;justify-content:center;gap:6px;background:#25D366;color:#fff;padding:.82rem;border-radius:8px;font-family:'Inter',sans-serif;font-weight:700;font-size:.82rem;text-decoration:none;margin:0 1.6rem 1.4rem;transition:filter .15s;}
+  .ro-wa-btn:hover{filter:brightness(.9);}
+  .ro-footer{padding:.65rem 1.6rem;border-top:1px solid #e6e6e4;background:#f5f5f3;border-radius:0 0 14px 14px;display:flex;align-items:center;gap:.5rem;}
+  .ro-footer-text{font-size:.58rem;color:#888;line-height:1.5;}
+  .ro-footer-text strong{color:#4a4a4a;}
+</style>
+
+<div class="ro-overlay" id="roOverlay" onclick="if(event.target===this)roClose()">
+  <div class="ro-modal">
+    <button class="ro-x" onclick="roClose()">&#10005;</button>
+    <div class="ro-head">
+      <div class="ro-head-label">Reserva online · 48 horas</div>
+      <div class="ro-head-title">Reservar con MercadoPago</div>
+    </div>
+    <div class="ro-car">
+      <img class="ro-car-img" id="ro-img" src="" alt="">
+      <div>
+        <div class="ro-car-brand" id="ro-brand"></div>
+        <div class="ro-car-name" id="ro-name"></div>
+        <div class="ro-car-price" id="ro-price"></div>
+      </div>
+    </div>
+    <div class="ro-amount">
+      <div class="ro-amount-lbl">Monto de la seña</div>
+      <div class="ro-amount-val">$500.000 <span>ARS</span></div>
+      <div class="ro-amount-note">Reserva por 48 hs · el saldo se abona al retirar el vehículo</div>
+    </div>
+    <div class="ro-note">
+      <strong>Importante.</strong> Una vez realizado el pago, envianos el comprobante por WhatsApp para confirmar la reserva.
+    </div>
+    <a id="ro-mp-link" href="https://mpago.la/TU_LINK_DE_PAGO" target="_blank" class="ro-mp-btn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248l-1.97 9.289c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.833.932z"/></svg>
+      Pagar $500.000 con MercadoPago
+    </a>
+    <a id="ro-wa-link" href="#" target="_blank" class="ro-wa-btn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.528 5.857L.057 23.882l6.158-1.615A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 0 1-5.006-1.374l-.36-.214-3.727.977.994-3.62-.234-.372A9.818 9.818 0 0 1 2.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg>
+      Enviar comprobante por WhatsApp
+    </a>
+    <div class="ro-footer">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <div class="ro-footer-text">Seña reembolsable si el auto no cumple lo pactado. <strong>Operación segura y transparente.</strong></div>
+    </div>
+  </div>
+</div>
+
+<script>
+var WA_NUM="5491137994538";
+var roCurrentAuto=null;
+function openReserva(){
+  var a=roCurrentAuto; if(!a)return;
+  document.getElementById('ro-img').src=(a.fotos&&a.fotos.length)?a.fotos[0]:'';
+  document.getElementById('ro-brand').textContent=a.marca;
+  document.getElementById('ro-name').textContent=a.modelo;
+  document.getElementById('ro-price').innerHTML='$'+Number(a.precio).toLocaleString('es-AR')+' <small>USD</small>';
+  var msg='Hola! Acabo de pagar la seña por MercadoPago del '+a.marca+' '+a.modelo+' '+(a.anio||'')+'. Te mando el comprobante ahora.';
+  document.getElementById('ro-wa-link').href='https://wa.me/'+WA_NUM+'?text='+encodeURIComponent(msg);
+  document.getElementById('roOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function roClose(){
+  document.getElementById('roOverlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+</script>
+</body>
+</html>
