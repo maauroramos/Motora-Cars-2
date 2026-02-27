@@ -189,7 +189,26 @@ var AUTOS = [
     combustible: "Diesel",
     trans: "Automatico",
     precio: 17000,
-    color: "Negro",
+    color: "blanco",
+    badge: "En Stock",
+    sede: "srm",
+    desc:        "Motor 1.6. Economico, ideal para ciudad. Documentacion completa. Permuta posible.",
+    fotos: [
+      "fotos/gol-2019/1.jpg",
+      "fotos/gol-2019/2.jpg"
+    ]
+  },
+
+    {
+    marca: "Toyota",
+    modelo: "Land Cruiser Prado",
+    anio: "2012",
+    tipo: "Pickup",
+    km: "280.000",
+    combustible: "Nafta",
+    trans: "Automatico",
+    precio: 33000,
+    color: "gris",
     badge: "En Stock",
     sede: "srm",
     desc:        "Motor 1.6. Economico, ideal para ciudad. Documentacion completa. Permuta posible.",
