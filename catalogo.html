@@ -162,6 +162,37 @@
     .m-price { font-size:1.2rem; }
     .m-foot .btn-wa { width:100%; justify-content:center; }
   }
+
+  /* RESERVA MODAL */
+  .ro-overlay{display:none;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.6);backdrop-filter:blur(5px);align-items:center;justify-content:center;padding:1.5rem;}
+  .ro-overlay.open{display:flex;}
+  .ro-modal{background:#fff;border-radius:14px;max-width:460px;width:100%;max-height:94vh;overflow-y:auto;position:relative;box-shadow:0 32px 80px rgba(0,0,0,.3);animation:roIn .22s cubic-bezier(.16,1,.3,1);font-family:'Inter',sans-serif;}
+  @keyframes roIn{from{opacity:0;transform:scale(.95) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+  .ro-x{position:absolute;top:12px;right:12px;z-index:10;width:28px;height:28px;border-radius:50%;background:#f5f5f3;border:1px solid #e6e6e4;color:#4a4a4a;font-size:.72rem;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;}
+  .ro-x:hover{background:#0f0f0f;color:#fff;border-color:#0f0f0f;}
+  .ro-head{padding:1.4rem 1.6rem 1.1rem;border-bottom:1px solid #e6e6e4;}
+  .ro-head-label{font-size:.52rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:#2a6347;margin-bottom:3px;}
+  .ro-head-title{font-size:1.15rem;font-weight:800;letter-spacing:-.04em;}
+  .ro-car{margin:1rem 1.6rem;background:#f5f5f3;border-radius:8px;padding:.8rem .9rem;display:flex;align-items:center;gap:.85rem;}
+  .ro-car-img{width:70px;height:52px;object-fit:cover;border-radius:6px;flex-shrink:0;background:#e6e6e4;}
+  .ro-car-brand{font-size:.5rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#888;}
+  .ro-car-name{font-size:.9rem;font-weight:700;letter-spacing:-.02em;margin:2px 0 3px;}
+  .ro-car-price{font-size:.82rem;font-weight:700;}
+  .ro-car-price small{font-size:.56rem;color:#888;font-weight:400;}
+  .ro-amount{margin:0 1.6rem 1rem;padding:1rem 1.1rem;background:#f0faf6;border-radius:8px;border:1px solid rgba(42,99,71,.15);}
+  .ro-amount-lbl{font-size:.5rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#2a6347;margin-bottom:4px;}
+  .ro-amount-val{font-size:1.6rem;font-weight:800;letter-spacing:-.03em;}
+  .ro-amount-val span{font-size:.75rem;color:#888;font-weight:400;margin-left:4px;}
+  .ro-amount-note{font-size:.63rem;color:#888;margin-top:3px;}
+  .ro-note{margin:0 1.6rem 1rem;padding:.65rem .85rem;background:#fff3e0;border-left:3px solid #ff9800;border-radius:0 6px 6px 0;font-size:.7rem;color:#555;line-height:1.7;}
+  .ro-note strong{color:#e65100;}
+  .ro-mp-btn{display:flex;align-items:center;justify-content:center;gap:8px;background:#009ee3;color:#fff;padding:.95rem;border-radius:8px;font-family:'Inter',sans-serif;font-weight:700;font-size:.86rem;text-decoration:none;margin:0 1.6rem .7rem;transition:filter .15s;}
+  .ro-mp-btn:hover{filter:brightness(.9);}
+  .ro-wa-btn{display:flex;align-items:center;justify-content:center;gap:6px;background:#25D366;color:#fff;padding:.82rem;border-radius:8px;font-family:'Inter',sans-serif;font-weight:700;font-size:.82rem;text-decoration:none;margin:0 1.6rem 1.4rem;transition:filter .15s;}
+  .ro-wa-btn:hover{filter:brightness(.9);}
+  .ro-footer{padding:.65rem 1.6rem;border-top:1px solid #e6e6e4;background:#f5f5f3;border-radius:0 0 14px 14px;display:flex;align-items:center;gap:.5rem;}
+  .ro-footer-text{font-size:.58rem;color:#888;line-height:1.5;}
+  .ro-footer-text strong{color:#4a4a4a;}
 </style>
 </head>
 <body>
@@ -264,6 +295,7 @@
 <script src="autos.js"></script>
 <script>
 var WA = "5491137994538";
+var roCurrentAuto = null;
 AUTOS.forEach(function(a, i) { a._id = i; });
 
 var fMarca = "";
@@ -303,6 +335,19 @@ function buildSelect() {
   });
 }
 
+// Muestra placeholder cuando una imagen de card falla al cargar
+function cardImgError(el) {
+  el.classList.add("errored");
+  el.insertAdjacentHTML("afterend",
+    '<div class="card-img-placeholder">' +
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' +
+    '<rect x="3" y="3" width="18" height="18" rx="2"/>' +
+    '<circle cx="8.5" cy="8.5" r="1.5"/>' +
+    '<polyline points="21 15 16 10 5 21"/>' +
+    '</svg></div>'
+  );
+}
+
 function render() {
   var wrap = document.getElementById("grid");
   var cnt  = document.getElementById("count");
@@ -338,7 +383,7 @@ function render() {
     var sedeName = a.sede === "bsas" ? "Buenos Aires" : (a.sede === "srm" ? "San Rafael" : "");
     h += '<div class="card" style="animation-delay:' + (i * 0.04) + 's" onclick="openModal(' + a._id + ')">';
     h += '<div class="card-img-wrap">';
-    if (foto) h += '<img class="card-img" src="' + foto + '" alt="' + a.marca + ' ' + a.modelo + '" loading="lazy" onerror="this.classList.add(\'errored\');this.insertAdjacentHTML(\'afterend\',\'<div class=\\\'card-img-placeholder\\\'>\'+ \'<svg viewBox=\\\'0 0 24 24\\\' fill=\\\'none\\\' stroke=\\\'currentColor\\\' stroke-width=\\\'1.5\\\' stroke-linecap=\\\'round\\\' stroke-linejoin=\\\'round\\\'>\'+ \'<rect x=\\\'3\\\' y=\\\'3\\\' width=\\\'18\\\' height=\\\'18\\\' rx=\\\'2\\\'/>\'+ \'<circle cx=\\\'8.5\\\' cy=\\\'8.5\\\' r=\\\'1.5\\\'/><polyline points=\\\'21 15 16 10 5 21\\\'/>\'+ \'</svg></div>\\\')">';
+    if (foto) h += '<img class="card-img" src="' + foto + '" alt="' + a.marca + ' ' + a.modelo + '" loading="lazy" onerror="cardImgError(this)">';
     else h += '<div class="card-img-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>';
     if (a.badge) h += '<span class="card-badge">' + a.badge + '</span>';
     if (nFotos > 1) h += '<span class="card-foto-count"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>' + nFotos + '</span>';
@@ -498,38 +543,6 @@ render();
 </script>
 
 <!-- MODAL RESERVA ONLINE -->
-<style>
-  .ro-overlay{display:none;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.6);backdrop-filter:blur(5px);align-items:center;justify-content:center;padding:1.5rem;}
-  .ro-overlay.open{display:flex;}
-  .ro-modal{background:#fff;border-radius:14px;max-width:460px;width:100%;max-height:94vh;overflow-y:auto;position:relative;box-shadow:0 32px 80px rgba(0,0,0,.3);animation:roIn .22s cubic-bezier(.16,1,.3,1);font-family:'Inter',sans-serif;}
-  @keyframes roIn{from{opacity:0;transform:scale(.95) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
-  .ro-x{position:absolute;top:12px;right:12px;z-index:10;width:28px;height:28px;border-radius:50%;background:#f5f5f3;border:1px solid #e6e6e4;color:#4a4a4a;font-size:.72rem;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;}
-  .ro-x:hover{background:#0f0f0f;color:#fff;border-color:#0f0f0f;}
-  .ro-head{padding:1.4rem 1.6rem 1.1rem;border-bottom:1px solid #e6e6e4;}
-  .ro-head-label{font-size:.52rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:#2a6347;margin-bottom:3px;}
-  .ro-head-title{font-size:1.15rem;font-weight:800;letter-spacing:-.04em;}
-  .ro-car{margin:1rem 1.6rem;background:#f5f5f3;border-radius:8px;padding:.8rem .9rem;display:flex;align-items:center;gap:.85rem;}
-  .ro-car-img{width:70px;height:52px;object-fit:cover;border-radius:6px;flex-shrink:0;background:#e6e6e4;}
-  .ro-car-brand{font-size:.5rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#888;}
-  .ro-car-name{font-size:.9rem;font-weight:700;letter-spacing:-.02em;margin:2px 0 3px;}
-  .ro-car-price{font-size:.82rem;font-weight:700;}
-  .ro-car-price small{font-size:.56rem;color:#888;font-weight:400;}
-  .ro-amount{margin:0 1.6rem 1rem;padding:1rem 1.1rem;background:#f0faf6;border-radius:8px;border:1px solid rgba(42,99,71,.15);}
-  .ro-amount-lbl{font-size:.5rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#2a6347;margin-bottom:4px;}
-  .ro-amount-val{font-size:1.6rem;font-weight:800;letter-spacing:-.03em;}
-  .ro-amount-val span{font-size:.75rem;color:#888;font-weight:400;margin-left:4px;}
-  .ro-amount-note{font-size:.63rem;color:#888;margin-top:3px;}
-  .ro-note{margin:0 1.6rem 1rem;padding:.65rem .85rem;background:#fff3e0;border-left:3px solid #ff9800;border-radius:0 6px 6px 0;font-size:.7rem;color:#555;line-height:1.7;}
-  .ro-note strong{color:#e65100;}
-  .ro-mp-btn{display:flex;align-items:center;justify-content:center;gap:8px;background:#009ee3;color:#fff;padding:.95rem;border-radius:8px;font-family:'Inter',sans-serif;font-weight:700;font-size:.86rem;text-decoration:none;margin:0 1.6rem .7rem;transition:filter .15s;}
-  .ro-mp-btn:hover{filter:brightness(.9);}
-  .ro-wa-btn{display:flex;align-items:center;justify-content:center;gap:6px;background:#25D366;color:#fff;padding:.82rem;border-radius:8px;font-family:'Inter',sans-serif;font-weight:700;font-size:.82rem;text-decoration:none;margin:0 1.6rem 1.4rem;transition:filter .15s;}
-  .ro-wa-btn:hover{filter:brightness(.9);}
-  .ro-footer{padding:.65rem 1.6rem;border-top:1px solid #e6e6e4;background:#f5f5f3;border-radius:0 0 14px 14px;display:flex;align-items:center;gap:.5rem;}
-  .ro-footer-text{font-size:.58rem;color:#888;line-height:1.5;}
-  .ro-footer-text strong{color:#4a4a4a;}
-</style>
-
 <div class="ro-overlay" id="roOverlay" onclick="if(event.target===this)roClose()">
   <div class="ro-modal">
     <button class="ro-x" onclick="roClose()">&#10005;</button>
@@ -569,8 +582,6 @@ render();
 </div>
 
 <script>
-var WA_NUM="5491137994538";
-var roCurrentAuto=null;
 function openReserva(){
   var a=roCurrentAuto; if(!a)return;
   document.getElementById('ro-img').src=(a.fotos&&a.fotos.length)?a.fotos[0]:'';
@@ -578,7 +589,7 @@ function openReserva(){
   document.getElementById('ro-name').textContent=a.modelo;
   document.getElementById('ro-price').innerHTML='$'+Number(a.precio).toLocaleString('es-AR')+' <small>USD</small>';
   var msg='Hola! Acabo de pagar la seña por MercadoPago del '+a.marca+' '+a.modelo+' '+(a.anio||'')+'. Te mando el comprobante ahora.';
-  document.getElementById('ro-wa-link').href='https://wa.me/'+WA_NUM+'?text='+encodeURIComponent(msg);
+  document.getElementById('ro-wa-link').href='https://wa.me/'+WA+'?text='+encodeURIComponent(msg);
   document.getElementById('roOverlay').classList.add('open');
   document.body.style.overflow='hidden';
 }
